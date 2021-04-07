@@ -58,6 +58,10 @@ void displayScreen()
 	_putch('0');
 	gotoXY(30, 2);
 	cout << "Q : 종료";
+	gotoXY(30, 3);
+	cout << "Z : 현재 위치에 X표시 하기";
+	gotoXY(30, 4);
+	cout << "A : 주변에 있는 벽 제거 (테두리 벽은 제거 안됨)";
 }
 
 void move(int dir)
@@ -87,11 +91,52 @@ void move(int dir)
 	}
 }
 
+void wall()
+{
+	int wall[10] = { 0, };
+
+	for (int i = 0; i < 10; i++)
+	{
+		bool different = true;
+
+		do
+		{
+			wall[i] = rand() % 324 + 1;
+
+			for (int j = 0; j < i; j++)
+			{
+				if (wall[i] == wall[j] && wall[i] == 0)
+				{
+					different = false;
+					break;
+				}
+			}
+
+		} while (!different);
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		ShowMap[wall[i] / 18 + 1][wall[i] % 18 + 1] = '+';
+	}
+}
+
+void setcursor(bool i, DWORD size) {
+	CONSOLE_CURSOR_INFO c = { 0 };
+	c.dwSize = size;
+	c.bVisible = i;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &c);
+}
+
 int main()
 {
 	int ch;
 	currentX = 1;
 	currentY = 1;
+
+	srand((unsigned int)time(NULL));
+	setcursor(false, 1);
+	wall();
 
 	while (true)
 	{
@@ -116,11 +161,26 @@ int main()
 			ch = tolower(ch);
 			if (ch == 'q')
 			{
+				gotoXY(0, 20);
 				exit(0);
 			}
 			else if (ch == 'z')
 			{
 				ShowMap[currentY][currentX] = 'X';
+			}
+			else if (ch == 'a')
+			{
+				if (currentX + 1 != 19)
+					ShowMap[currentY][currentX + 1] = '.';
+
+				if (currentX - 1 != 0)
+					ShowMap[currentY][currentX - 1] = '.';
+
+				if (currentY + 1 != 19)
+					ShowMap[currentY + 1][currentX] = '.';
+
+				if (currentY - 1 != 0)
+					ShowMap[currentY - 1][currentX] = '.';
 			}
 		}
 	}
