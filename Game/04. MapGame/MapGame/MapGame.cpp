@@ -221,8 +221,16 @@ int main()
 					ShowMap[19][currentX] = '.';
 				}
 
-				if ((currentX == 0 || currentX == 19))
+				if (currentX == 0 || currentX == 19)
 				{
+					if (currentY == 1 || currentY == 18)
+					{
+						ShowMap[0][0] = '.';
+						ShowMap[0][19] = '.';
+						ShowMap[19][0] = '.';
+						ShowMap[19][19] = '.';
+					}
+
 					if (currentY + 1 < 21)
 					{
 						ShowMap[currentY + 1][0] = '.';
@@ -236,8 +244,17 @@ int main()
 					}
 				}
 
-				if ((currentY == 0 || currentY == 19))
+				if (currentY == 0 || currentY == 19)
 				{
+					if (currentX == 1 || currentX == 18)
+					{
+						ShowMap[0][0] = '.';
+						ShowMap[0][19] = '.';
+
+						ShowMap[19][0] = '.';
+						ShowMap[19][19] = '.';
+					}
+
 					if (currentX + 1 < 21)
 					{
 						ShowMap[0][currentX + 1] = '.';
