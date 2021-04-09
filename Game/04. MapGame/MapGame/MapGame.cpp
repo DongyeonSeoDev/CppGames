@@ -43,6 +43,20 @@ void gotoXY(int x, int y)
 	SetConsoleCursorPosition(hOut, Cur);
 }
 
+void keyPrint()
+{
+	gotoXY(30, 2);
+	cout << "Q : 종료";
+	gotoXY(30, 3);
+	cout << "Z : 현재 위치에 X표시 하기";
+	gotoXY(30, 4);
+	cout << "A : 상하좌우에 있는 벽 제거 (테두리 벽은 제외)";
+	gotoXY(30, 5);
+	cout << "B : 상하좌우에 있는 테두리 벽을 제거, 대칭되는 위치의 벽도 같이 제거";
+	gotoXY(34, 6);
+	cout << "(사라진 벽을 통과하면 대칭되는 위치로 나옴)";
+}
+
 void displayScreen()
 {
 	for (int y = 0; y < 20; y++)
@@ -56,12 +70,6 @@ void displayScreen()
 
 	gotoXY(currentX, currentY);
 	_putch('0');
-	gotoXY(30, 2);
-	cout << "Q : 종료";
-	gotoXY(30, 3);
-	cout << "Z : 현재 위치에 X표시 하기";
-	gotoXY(30, 4);
-	cout << "A : 주변에 있는 벽 제거 (테두리 벽은 제거 안됨)";
 }
 
 void move(int dir)
@@ -84,7 +92,23 @@ void move(int dir)
 		break;
 	}
 
-	if (ShowMap[currentY + dir_y][currentX + dir_x] != '+')
+	if (currentX + dir_x == -1)
+	{
+		currentX = 19;
+	}
+	else if (currentX + dir_x == 20)
+	{
+		currentX = 0;
+	}
+	else if (currentY + dir_y == -1)
+	{
+		currentY = 19;
+	}
+	else if (currentY + dir_y == 20)
+	{
+		currentY = 0;
+	}
+	else if (ShowMap[currentY + dir_y][currentX + dir_x] != '+')
 	{
 		currentX += dir_x;
 		currentY += dir_y;
@@ -137,6 +161,7 @@ int main()
 	srand((unsigned int)time(NULL));
 	setcursor(false, 1);
 	wall();
+	keyPrint();
 
 	while (true)
 	{
@@ -181,6 +206,50 @@ int main()
 
 				if (currentY - 1 != 0)
 					ShowMap[currentY - 1][currentX] = '.';
+			}
+			else if (ch == 'b')
+			{
+				if (currentX + 1 == 19 || currentX - 1 == 0)
+				{
+					ShowMap[currentY][0] = '.';
+					ShowMap[currentY][19] = '.';
+				}
+
+				if (currentY + 1 == 19 || currentY - 1 == 0)
+				{
+					ShowMap[0][currentX] = '.';
+					ShowMap[19][currentX] = '.';
+				}
+
+				if ((currentX == 0 || currentX == 19))
+				{
+					if (currentY + 1 < 21)
+					{
+						ShowMap[currentY + 1][0] = '.';
+						ShowMap[currentY + 1][19] = '.';
+					}
+
+					if (currentY - 1 > -1)
+					{
+						ShowMap[currentY - 1][0] = '.';
+						ShowMap[currentY - 1][19] = '.';
+					}
+				}
+
+				if ((currentY == 0 || currentY == 19))
+				{
+					if (currentX + 1 < 21)
+					{
+						ShowMap[0][currentX + 1] = '.';
+						ShowMap[19][currentX + 1] = '.';
+					}
+
+					if (currentX - 1 > -1)
+					{
+						ShowMap[0][currentX - 1] = '.';
+						ShowMap[19][currentX - 1] = '.';
+					}
+				}
 			}
 		}
 	}
