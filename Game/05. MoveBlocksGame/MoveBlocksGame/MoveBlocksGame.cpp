@@ -13,13 +13,13 @@ using namespace std;
 char Stage[10][16] =
 {
 	"+++++++++++++++",
-	"+++++++++++++++",
-	"++++&  ++++++++",
+	"++++++   ++++++",
+	"++++&  @ ++++++",
 	"++++ OO++++++++",
 	"++++ O ++++.+++",
-	"++++++ ++++.+++",
-	"++++++     .+++",
-	"+++++    +  +++",
+	"+++++  ++++.+++",
+	"+++++      .+++",
+	"+++++    @  +++",
 	"+++++    ++++++",
 	"+++++++++++++++"
 };
@@ -36,6 +36,10 @@ enum class eBPullDir
 eBPullDir bPullDir;
 char backgroundMap[10][16];
 int currentX, currentY;
+int beforeX, beforeY;
+int printX[10], printY[10];
+int printCount = 0;
+int portalX[2], portalY[2];
 int totalMove;
 bool bPull;
 
@@ -47,6 +51,14 @@ void gotoXY(int x, int y)
 	Cur.X = x;
 	Cur.Y = y;
 	SetConsoleCursorPosition(hOut, Cur);
+}
+
+void setcursor(bool i, DWORD size) 
+{
+	CONSOLE_CURSOR_INFO c = { 0 };
+	c.dwSize = size;
+	c.bVisible = i;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &c);
 }
 
 void clrscr()
@@ -67,6 +79,43 @@ void initScreen()
 
 	gotoXY(currentX, currentY);
 	_putch('&');
+
+	gotoXY(20, 2);
+	puts("불럭 이동 게임");
+
+	gotoXY(20, 4);
+	puts("Q : 종료");
+
+	gotoXY(20, 6);
+	puts("P : 당기기");
+
+	gotoXY(20, 8);
+	printf("이동 횟수 : %d", totalMove);
+}
+
+void addPrintXYPosition(int x, int y)
+{
+	printX[printCount] = x;
+	printY[printCount] = y;
+	printCount++;
+}
+
+void printStage()
+{
+	for (int i = 0; i < printCount; i++)
+	{
+		gotoXY(printX[i], printY[i]);
+		_putch(backgroundMap[printY[i]][printX[i]]);
+	}
+
+	gotoXY(currentX, currentY);
+	_putch('&');
+
+	gotoXY(beforeX, beforeY);
+	_putch(backgroundMap[beforeY][beforeX]);
+
+	gotoXY(20, 8);
+	printf("이동 횟수 : %d", totalMove);
 }
 
 bool checkEnd()
@@ -91,13 +140,21 @@ bool bPullPositionCheck(int dir_x, int dir_y, int x, int y)
 	{
 		if (Stage[currentY + y][currentX + x] == '.')
 		{
-			backgroundMap[currentY + y + dir_y][currentX + x + dir_x] = '.';
+			backgroundMap[currentY + y][currentX + x] = '.';
+			addPrintXYPosition(currentX + x, currentY + y);
+		}
+		else if (Stage[currentY + y][currentX + x] == '@')
+		{
+			backgroundMap[currentY + y][currentX + x] = '@';
+			addPrintXYPosition(currentX + x, currentY + y);
 		}
 		else {
 			backgroundMap[currentY + y][currentX + x] = ' ';
+			addPrintXYPosition(currentX + x, currentY + y);
 		}
 
 		backgroundMap[currentY + y + dir_y][currentX + x + dir_x] = '8';
+		addPrintXYPosition(currentX + x + dir_x, currentY + y + dir_y);
 	}
 	else
 	{
@@ -131,18 +188,72 @@ void move(int dir)
 	{
 		if (backgroundMap[currentY + dir_y][currentX + dir_x] == 'O')
 		{
-			if (backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] == ' '
-				|| backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] == '.')
+			if (backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] == ' ' || backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] == '.')
 			{
 				if (Stage[currentY + dir_y][currentX + dir_x] == '.')
 				{
 					backgroundMap[currentY + dir_y][currentX + dir_x] = '.';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
+				}
+				else if (Stage[currentY + dir_y][currentX + dir_x] == '@') 
+				{
+					backgroundMap[currentY + dir_y][currentX + dir_x] = '@';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
 				}
 				else {
 					backgroundMap[currentY + dir_y][currentX + dir_x] = ' ';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
 				}
 
 				backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] = 'O';
+				addPrintXYPosition(currentX + dir_x * 2, currentY + dir_y * 2);
+			}
+			else if (backgroundMap[currentY + dir_y * 2][currentX + dir_x * 2] == '@')
+			{
+				if (currentY + dir_y * 2 == portalY[0] && currentX + dir_x * 2 == portalX[0])
+				{
+					if (backgroundMap[portalY[1]][portalX[1]] == 'O')
+					{
+						backgroundMap[portalY[0]][portalX[0]] = 'O';
+						addPrintXYPosition(portalX[0], portalY[0]);
+					}
+					else
+					{
+						backgroundMap[portalY[1]][portalX[1]] = 'O';
+						addPrintXYPosition(portalX[1], portalY[1]);
+						backgroundMap[portalY[0]][portalX[0]] = '@';
+						addPrintXYPosition(portalX[0], portalY[0]);
+					}
+				}
+				else
+				{
+					if (backgroundMap[portalY[0]][portalX[0]] == 'O')
+					{
+						backgroundMap[portalY[1]][portalX[1]] = 'O';
+						addPrintXYPosition(portalX[1], portalY[1]);
+					}
+					else
+					{
+						backgroundMap[portalY[0]][portalX[0]] = 'O';
+						addPrintXYPosition(portalX[0], portalY[0]);
+						backgroundMap[portalY[1]][portalX[1]] = '@';
+						addPrintXYPosition(portalX[1], portalY[1]);
+					}
+				}
+
+				if (Stage[currentY + dir_y][currentX + dir_x] == '.')
+				{
+					backgroundMap[currentY + dir_y][currentX + dir_x] = '.';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
+				}
+				else if (Stage[currentY + dir_y][currentX + dir_x] == '@') {
+					backgroundMap[currentY + dir_y][currentX + dir_x] = '@';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
+				}
+				else {
+					backgroundMap[currentY + dir_y][currentX + dir_x] = ' ';
+					addPrintXYPosition(currentX + dir_x, currentY + dir_y);
+				}
 			}
 			else
 			{
@@ -178,6 +289,8 @@ void move(int dir)
 			}
 		}
 
+		beforeX = currentX;
+		beforeY = currentY;
 		currentX += dir_x;
 		currentY += dir_y;
 		totalMove++;
@@ -190,15 +303,19 @@ void changeBPullImage(char ch)
 	{
 	case eBPullDir::right:
 		backgroundMap[currentY][currentX + 1] = ch;
+		addPrintXYPosition(currentX + 1, currentY);
 		break;
 	case eBPullDir::left:
 		backgroundMap[currentY][currentX - 1] = ch;
+		addPrintXYPosition(currentX - 1, currentY);
 		break;
 	case eBPullDir::up:
 		backgroundMap[currentY - 1][currentX] = ch;
+		addPrintXYPosition(currentX, currentY - 1);
 		break;
 	case eBPullDir::down:
 		backgroundMap[currentY + 1][currentX] = ch;
+		addPrintXYPosition(currentX, currentY + 1);
 		break;
 	}
 }
@@ -240,11 +357,9 @@ void checkBPullDir()
 	}
 }
 
-int main()
+void findStageObject()
 {
-	int ch;
-
-	memcpy(backgroundMap, Stage, sizeof(backgroundMap));
+	int portalCount = 0;
 
 	for (int y = 0; y < 10; y++)
 	{
@@ -256,18 +371,37 @@ int main()
 				currentY = y;
 				backgroundMap[y][x] = ' ';
 			}
+
+			if (Stage[y][x] == '@')
+			{
+				portalX[portalCount] = x;
+				portalY[portalCount] = y;
+				portalCount++;
+			}
 		}
 	}
+}
+
+int main()
+{
+	int ch;
+
+	memcpy(backgroundMap, Stage, sizeof(backgroundMap));
+	setcursor(false, 1);
+
+	findStageObject();
 
 	clrscr();
 	totalMove = 0;
 	bPull = false;
 	bPullDir = eBPullDir::none;
 
+	initScreen();
+
 	while (true)
 	{
-		initScreen();
-
+		printStage();
+		printCount = 0;
 		ch = _getch();
 
 		// 방향키
@@ -317,8 +451,8 @@ int main()
 		{
 			clrscr();
 			gotoXY(10, 4);
-			printf("잘 풀었습니다. 아무 키나 누르세요.");
-			_getch();
+			printf("축하합니다. 스테이지를 클리어 하였습니다.  (종료하려면 아무 키나 눌러주세요)");
+			ch = _getch();
 			clrscr();
 			exit(0);
 			break;
