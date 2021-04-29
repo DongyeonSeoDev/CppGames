@@ -452,6 +452,8 @@ int main()
 			clrscr();
 			gotoXY(10, 4);
 			printf("축하합니다. 스테이지를 클리어 하였습니다.  (종료하려면 아무 키나 눌러주세요)");
+			gotoXY(40, 6);
+			printf("%d번 움직였습니다.", totalMove);
 			ch = _getch();
 			clrscr();
 			exit(0);
