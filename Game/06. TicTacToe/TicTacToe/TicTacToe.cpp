@@ -25,6 +25,14 @@ void clrscr()
 	system("cls");
 }
 
+void setcursor(bool i, DWORD size)
+{
+	CONSOLE_CURSOR_INFO c = { 0 };
+	c.dwSize = size;
+	c.bVisible = i;
+	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &c);
+}
+
 int currentX, currentY;
 int totalFill;
 
@@ -181,6 +189,7 @@ void showResult(int gameEnd)
 
 int main()
 {
+	setcursor(false, 1);
 	srand((unsigned)time(NULL));
 
 	int ch;
