@@ -41,6 +41,7 @@ int printX[10], printY[10];
 int printCount = 0;
 int portalX[2], portalY[2];
 int totalMove;
+int maxMove = 70;
 bool bPull;
 
 void gotoXY(int x, int y)
@@ -90,7 +91,7 @@ void initScreen()
 	puts("P : 당기기");
 
 	gotoXY(20, 8);
-	printf("이동 횟수 : %d", totalMove);
+	printf("이동 횟수 : %d/%d ", totalMove, maxMove);
 }
 
 void addPrintXYPosition(int x, int y)
@@ -115,7 +116,7 @@ void printStage()
 	_putch(backgroundMap[beforeY][beforeX]);
 
 	gotoXY(20, 8);
-	printf("이동 횟수 : %d", totalMove);
+	printf("이동 횟수 : %d/%d ", totalMove, maxMove);
 }
 
 bool checkEnd()
@@ -445,6 +446,17 @@ int main()
 					changeBPullImage('8');
 				}
 			}
+		}
+
+		if (totalMove >= maxMove)
+		{
+			clrscr();
+			gotoXY(10, 4);
+			printf("실패했습니다. 스테이지를 클리어 하지 못하였습니다.  (종료하려면 아무 키나 눌러주세요)");
+			ch = _getch();
+			clrscr();
+			exit(0);
+			break;
 		}
 
 		if (checkEnd())
