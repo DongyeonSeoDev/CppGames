@@ -10,8 +10,14 @@ using namespace std;
 #define TREE_BOTTOM_Y 20
 #define BULLET_X 8
 #define BULLET_Y 21
+#define BIRD_BOTTOM_X 45
+#define BIRD_BOTTOM_Y 2
+#define UPBULLET_X 6
+#define UPBULLET_Y 10
+
 #define JUMP 1
 #define SHOT 2
+#define UPSHOT 3
 
 void gotoXY(int x, int y)
 {
@@ -90,13 +96,27 @@ void drawGameover(int score)
 void drawBullet(int posX)
 {
     gotoXY(posX, BULLET_Y);
-    cout << "O" << endl;
+    cout << "O";
+}
+
+void drawUpBullet(int posY)
+{
+    gotoXY(UPBULLET_X, posY);
+    cout << "O";
 }
 
 void drawScore(int score)
 {
     gotoXY(40, 0);
     cout << "Score: " << score;
+}
+
+void drawBird(int posX)
+{
+    gotoXY(posX, BIRD_BOTTOM_Y);
+    cout << "$$$$$$$$$$";
+    gotoXY(posX, BIRD_BOTTOM_Y + 1);
+    cout << "$$$$$$$$$$";
 }
 
 int getKeyDown()
@@ -111,6 +131,9 @@ int getKeyDown()
         case 'a':
             return SHOT;
             break;
+        case 'u':
+            return UPSHOT;
+            break;
         }
     }
 
@@ -124,13 +147,16 @@ int main(void)
     bool isBottom = true;
     bool isGameover = false;
     bool isShot = false;
+    bool isUp = false;
 
     const int gravity = 3;
 
     int dinoY = DINO_BOTTOM_Y;
     int treeX = TREE_BOTTOM_X;
     int bulletX = BULLET_X;
+    int upBulletY = UPBULLET_Y;
     int score = 0;
+    int birdX = BIRD_BOTTOM_X;
 
     setConsoleView();
 
@@ -149,9 +175,18 @@ int main(void)
             if (!isShot && !isGameover)
             {
                 isShot = true;
+                isUp = false;
+            }
+            break;
+        case UPSHOT:
+            if (!isShot && !isGameover)
+            {
+                isShot = true;
+                isUp = true;
             }
             break;
         }
+
         if (treeX <= 6 && dinoY >= DINO_BOTTOM_Y - 4)
         {
             isGameover = true;
@@ -185,7 +220,7 @@ int main(void)
             {
                 treeX = TREE_BOTTOM_X;
             }
-            else if (treeX - 1 <= bulletX && treeX + 1 >= bulletX && isShot)
+            else if (treeX - 1 <= bulletX && treeX + 1 >= bulletX && isShot && !isUp)
             {
                 treeX = TREE_BOTTOM_X;
                 isShot = false;
@@ -193,20 +228,49 @@ int main(void)
                 score++;
             }
 
+            birdX -= 1;
+
+            if (birdX <= 0)
+            {
+                birdX = BIRD_BOTTOM_X;
+            }
+            else if (birdX <= UPBULLET_X && birdX + 10 >= UPBULLET_X && BIRD_BOTTOM_Y <= upBulletY + 2 && BIRD_BOTTOM_Y >= upBulletY - 2 && isShot && isUp)
+            {
+                birdX = BIRD_BOTTOM_X;
+                isShot = false;
+                upBulletY = UPBULLET_Y;
+                score++;
+            }
+
             if (isShot)
             {
-                bulletX += 1;
-                drawBullet(bulletX);
-
-                if (bulletX >= 45)
+                if (isUp)
                 {
-                    isShot = false;
-                    bulletX = BULLET_X;
+                    upBulletY -= 1;
+                    drawUpBullet(upBulletY);
+
+                    if (upBulletY <= 0)
+                    {
+                        isShot = false;
+                        upBulletY = UPBULLET_Y;
+                    }
+                }
+                else
+                {
+                    bulletX += 1;
+                    drawBullet(bulletX);
+
+                    if (bulletX >= 45)
+                    {
+                        isShot = false;
+                        bulletX = BULLET_X;
+                    }
                 }
             }
 
             drawDino(dinoY);
             drawTree(treeX);
+            drawBird(birdX);
             drawScore(score);
         }
         else
