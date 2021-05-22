@@ -13,6 +13,10 @@ using namespace std;
 
 int playerX, playerY;
 
+const int enemyCount = 10;
+
+int enemyX[enemyCount], enemyY[enemyCount]; //enemy 여러개 만들기
+
 char map[mapYSize][mapXSize] =
 {
 	"---------------------------------------",
@@ -99,6 +103,12 @@ void drawMap(char map[mapYSize][mapXSize])
 
 	gotoXY(playerX, playerY);
 	cout << "&";
+
+	for (int i = 0; i < enemyCount; i++)
+	{
+		gotoXY(enemyX[i], enemyY[i]);
+		cout << "%";
+	}
 }
 
 int main()
@@ -112,6 +122,12 @@ int main()
 
 	playerX = 27;
 	playerY = 20;
+
+	for (int i = 0; i < enemyCount; i++)
+	{
+		enemyX[i] = rand() % 19 + 18;
+		enemyY[i] = rand() % 4 + 2;
+	}
 
 	while (true)
 	{
@@ -138,6 +154,24 @@ int main()
 			playerY++;
 
 			if (playerY > 21) playerY = 21;
+		}
+
+		for (int i = 0; i < enemyCount; i++)
+		{
+			if (playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
+			{
+				gotoXY(10, 10);
+				cout << "게임오버" << endl;
+				return 0;
+			}
+
+			enemyY[i]++;
+
+			if (enemyY[i] > 21)
+			{
+				enemyX[i] = rand() % 19 + 18;
+				enemyY[i] = rand() % 4 + 2;
+			}
 		}
 
 		if (height % 2 == 0)
