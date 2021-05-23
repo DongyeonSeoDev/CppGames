@@ -119,6 +119,7 @@ int main()
 	srand((unsigned)time(NULL));
 
 	int height = 0;
+	int speed = 0;
 
 	playerX = 27;
 	playerY = 20;
@@ -126,14 +127,15 @@ int main()
 	for (int i = 0; i < enemyCount; i++)
 	{
 		enemyX[i] = rand() % 19 + 18;
-		enemyY[i] = rand() % 4 + 2;
+		enemyY[i] = rand() % 4 + 3;
 	}
 
 	while (true)
 	{
 		system("cls");
 
-		cout << "현재 높이: " << height << "m" << endl;
+		cout << "현재 높이: " << height << endl;
+		cout << "현재 스피드: " << speed << endl;
 
 		if (GetAsyncKeyState(VK_LEFT)) { //왼쪽
 			playerX--;
@@ -161,7 +163,9 @@ int main()
 			if (playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
 			{
 				gotoXY(10, 10);
-				cout << "게임오버" << endl;
+				cout << "게임오버" << endl << endl << endl << endl << endl << endl << endl;
+				Sleep(1000);
+				system("pause");
 				return 0;
 			}
 
@@ -170,7 +174,7 @@ int main()
 			if (enemyY[i] > 21)
 			{
 				enemyX[i] = rand() % 19 + 18;
-				enemyY[i] = rand() % 4 + 2;
+				enemyY[i] = rand() % 4 + 3;
 			}
 		}
 
@@ -184,6 +188,10 @@ int main()
 		}
 		height++;
 
-		Sleep(10);
+		speed = height / 100;
+
+		if (speed > 10) speed = 10;
+
+		Sleep(100 - speed * 10);
 	}
 }
