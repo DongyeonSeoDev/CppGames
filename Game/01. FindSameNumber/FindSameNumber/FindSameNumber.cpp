@@ -15,8 +15,27 @@ void gotoXY(int x, int y)
 	SetConsoleCursorPosition(hOut, Cur);
 }
 
+void showKey()
+{
+	cout << "12345" << endl;
+	cout << "qwert" << endl;
+	cout << "asdfg" << endl;
+	cout << "zxcvb" << endl;
+	cout << endl << "위에 있는 키를 누르면 각 칸의 숫자가 보입니다." << endl;
+	cout << "키를 2개를 누르면 됩니다." << endl;
+	cout << "같은 숫자를 누르면 성공 다른 숫자를 누르면 실패 입니다." << endl << endl << endl;
+	
+	cout << "      -게임을 시작하려면 아무키나 눌러주세요-";
+
+	_getch();
+
+	system("cls");
+}
+
 int main()
 {
+	showKey();
+
 	int answer[20];
 	int index = 1;
 
