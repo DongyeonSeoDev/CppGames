@@ -84,3 +84,23 @@ bool Missile::checkCollision(Missile missile)
 
 	return false;
 }
+
+bool Missile::checkPlayer(int playerX, int playerY, bool bMoveDown)
+{
+	if (bMoveDown)
+	{
+		if ((x == playerX || x + 1 == playerX) && (y == playerY || y + 1 == playerY))
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if ((x == playerX || x + 1 == playerX) && (y == playerY || y - 1 == playerY))
+		{
+			return true;
+		}
+	}
+
+	return false;
+}

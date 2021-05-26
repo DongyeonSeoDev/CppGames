@@ -31,8 +31,9 @@ int main()
 	setConsoleView();
 
 	int key;
+	bool gamePlay = true;
 
-	while (true)
+	while (gamePlay)
 	{
 		key = getKeyDown();
 		key = tolower(key);
@@ -45,7 +46,7 @@ int main()
 			myMissiles.push_back(myMissile);
 		}
 
-		if (rand() % 100 < 10)
+		if (rand() % 100 < 20)
 		{
 			Missile missile;
 			missile.setMissile(-1);
@@ -92,6 +93,12 @@ int main()
 
 		for (int i = 0; i < (int)missiles.size(); i++)
 		{
+			if (missiles[i].checkPlayer(2, y, bMoveDown))
+			{
+				gamePlay = false;
+				break;
+			}
+
 			if (missiles[i].checkEnd())
 			{
 				missiles.erase(missiles.begin() + i);
@@ -126,6 +133,8 @@ int main()
 		sleep(50);
 		clrscr();
 	}
+
+	cout << "게임오버" << endl;
 
 	return 0;
 }

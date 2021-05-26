@@ -15,4 +15,5 @@ public:
 
 	bool checkEnd();
 	bool checkCollision(Missile missile);
+	bool checkPlayer(int playerX, int playerY, bool bMoveDown);
 };
