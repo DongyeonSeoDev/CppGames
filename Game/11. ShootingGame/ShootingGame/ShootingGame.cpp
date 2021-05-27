@@ -15,7 +15,7 @@ vector<Missile> missiles, myMissiles;
 
 void setConsoleView()
 {
-	system("mode con:cols=60 lines=20");
+	system("mode con:cols=60 lines=24");
 	system("title SHOOTING GAME");
 }
 
@@ -31,6 +31,7 @@ int main()
 	setConsoleView();
 
 	int key;
+	int score = 0;
 	bool gamePlay = true;
 
 	while (gamePlay)
@@ -69,6 +70,11 @@ int main()
 		gotoXY(2, y);
 		cout << "▶";
 		gotoXY(59, 19);
+
+		gotoXY(0, 20);
+		cout << "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■";
+		gotoXY(0, 22);
+		cout << "점수: " << score;
 
 		if (bMoveDown)
 		{
@@ -130,11 +136,13 @@ int main()
 			}
 		}
 
+		score++;
 		sleep(50);
 		clrscr();
 	}
 
 	cout << "게임오버" << endl;
+	cout << "점수: " << score << endl;
 
 	return 0;
 }
