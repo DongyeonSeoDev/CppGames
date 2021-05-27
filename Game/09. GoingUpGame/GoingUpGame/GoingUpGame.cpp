@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <Windows.h>
 #include <conio.h>
+#include <vector>
 using namespace std;
 
 #define mapXSize 40
@@ -13,9 +14,7 @@ using namespace std;
 
 int playerX, playerY;
 
-const int enemyCount = 10;
-
-int enemyX[enemyCount], enemyY[enemyCount]; //enemy 여러개 만들기
+vector<int> enemyX, enemyY;
 
 char map[mapYSize][mapXSize] =
 {
@@ -104,7 +103,7 @@ void drawMap(char map[mapYSize][mapXSize])
 	gotoXY(playerX, playerY);
 	cout << "&";
 
-	for (int i = 0; i < enemyCount; i++)
+	for (int i = 0; i < (int)enemyX.size(); i++)
 	{
 		gotoXY(enemyX[i], enemyY[i]);
 		cout << "%";
@@ -120,23 +119,13 @@ int main()
 
 	int height = 0;
 	int speed = 0;
+	int creatEnemyProbability = 10;
 
 	playerX = 27;
 	playerY = 20;
 
-	for (int i = 0; i < enemyCount; i++)
-	{
-		enemyX[i] = rand() % 19 + 18;
-		enemyY[i] = rand() % 4 + 3;
-	}
-
 	while (true)
 	{
-		system("cls");
-
-		cout << "현재 높이: " << height << endl;
-		cout << "현재 스피드: " << speed << endl;
-
 		if (GetAsyncKeyState(VK_LEFT)) { //왼쪽
 			playerX--;
 
@@ -149,7 +138,7 @@ int main()
 		}
 		if (GetAsyncKeyState(VK_UP)) { //위
 			playerY--;
-			
+
 			if (playerY < 2) playerY = 2;
 		}
 		if (GetAsyncKeyState(VK_DOWN)) { //아래
@@ -158,10 +147,33 @@ int main()
 			if (playerY > 21) playerY = 21;
 		}
 
-		for (int i = 0; i < enemyCount; i++)
+		system("cls");
+
+		cout << "현재 높이: " << height << endl;
+		cout << "현재 스피드: " << speed << " t: " << creatEnemyProbability << endl;
+
+		if (height % 2 == 0)
+		{
+			drawMap(map);
+		}
+		else
+		{
+			drawMap(map2);
+		}
+
+		if (rand() % 100 < creatEnemyProbability)
+		{
+			enemyX.push_back(rand() % 19 + 18);
+			enemyY.push_back(2);
+		}
+
+		for (int i = 0; i < (int)enemyX.size(); i++)
 		{
 			if (playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
 			{
+				system("cls");
+				cout << "현재 높이: " << height << endl;
+				cout << "현재 스피드: " << speed << " t: " << creatEnemyProbability << endl;
 				gotoXY(10, 10);
 				cout << "게임오버" << endl << endl << endl << endl << endl << endl << endl;
 				Sleep(1000);
@@ -173,24 +185,21 @@ int main()
 
 			if (enemyY[i] > 21)
 			{
-				enemyX[i] = rand() % 19 + 18;
-				enemyY[i] = rand() % 4 + 3;
+				enemyX.erase(enemyX.begin() + i);
+				enemyY.erase(enemyY.begin() + i);
+				i--;
 			}
 		}
-
-		if (height % 2 == 0)
-		{
-			drawMap(map);
-		}
-		else
-		{
-			drawMap(map2);
-		}
+		
 		height++;
 
 		speed = height / 100;
+		creatEnemyProbability = height / 10;
 
 		if (speed > 10) speed = 10;
+
+		if (creatEnemyProbability < 20) creatEnemyProbability = 20;
+		else if (creatEnemyProbability > 100) creatEnemyProbability = 100;
 
 		Sleep(100 - speed * 10);
 	}
