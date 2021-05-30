@@ -10,6 +10,7 @@ using namespace std;
 
 bool bMoveDown;
 int y;
+int spawnEnemyProbability = 20;
 
 vector<Missile> missiles, myMissiles;
 
@@ -47,7 +48,7 @@ int main()
 			myMissiles.push_back(myMissile);
 		}
 
-		if (rand() % 100 < 20)
+		if (rand() % 100 < spawnEnemyProbability)
 		{
 			Missile missile;
 			missile.setMissile(-1);
@@ -137,6 +138,12 @@ int main()
 		}
 
 		score++;
+
+		if (score >= 300)
+		{
+			spawnEnemyProbability = 50;
+		}
+
 		sleep(50);
 		clrscr();
 	}
