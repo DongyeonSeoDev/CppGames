@@ -15,6 +15,7 @@ using namespace std;
 int playerX, playerY;
 
 vector<int> enemyX, enemyY;
+vector<int> itemX, itemY, itemData;
 
 char map[mapYSize][mapXSize] =
 {
@@ -108,6 +109,20 @@ void drawMap(char map[mapYSize][mapXSize])
 		gotoXY(enemyX[i], enemyY[i]);
 		cout << "%";
 	}
+
+	for (int i = 0; i < (int)itemData.size(); i++)
+	{
+		gotoXY(itemX[i], itemY[i]);
+		
+		if (itemData[i] == 0)
+		{
+			cout << "0";
+		}
+		else
+		{
+			cout << "1";
+		}
+	}
 }
 
 int main()
@@ -120,6 +135,10 @@ int main()
 	int height = 0;
 	int speed = 0;
 	int creatEnemyProbability = 10;
+	int minusSpeed = 0;
+
+	bool isInvincibility = false;
+	int startItemHeight = 0;
 
 	playerX = 27;
 	playerY = 20;
@@ -150,7 +169,10 @@ int main()
 		system("cls");
 
 		cout << "현재 높이: " << height << endl;
-		cout << "현재 스피드: " << speed << " t: " << creatEnemyProbability << endl;
+		cout << "현재 스피드: " << speed << endl;
+
+		if (isInvincibility) cout << "무적시간" << endl;
+		else cout << endl;
 
 		if (height % 2 == 0)
 		{
@@ -164,16 +186,62 @@ int main()
 		if (rand() % 100 < creatEnemyProbability)
 		{
 			enemyX.push_back(rand() % 19 + 18);
-			enemyY.push_back(2);
+			enemyY.push_back(3);
+		}
+
+		if (rand() % 100 < 1)
+		{
+			itemX.push_back(rand() % 19 + 18);
+			itemY.push_back(3);
+			itemData.push_back(0);
+		}
+
+		if (rand() % 100 < 1)
+		{
+			itemX.push_back(rand() % 19 + 18);
+			itemY.push_back(3);
+			itemData.push_back(1);
+		}
+
+		for (int i = 0; i < (int)itemData.size(); i++)
+		{
+			if (playerX == itemX[i] && (playerY == itemY[i] || playerY == itemY[i] + 1))
+			{
+				if (itemData[i] == 0)
+				{
+					minusSpeed += 1;
+				}
+				else
+				{
+					isInvincibility = true;
+					startItemHeight = height;
+				}
+
+				itemX.erase(itemX.begin() + i);
+				itemY.erase(itemY.begin() + i);
+				itemData.erase(itemData.begin() + i);
+				i--;
+				continue;
+			}
+
+			itemY[i]++;
+
+			if (itemY[i] > 21)
+			{
+				itemX.erase(itemX.begin() + i);
+				itemY.erase(itemY.begin() + i);
+				itemData.erase(itemData.begin() + i);
+				i--;
+			}
 		}
 
 		for (int i = 0; i < (int)enemyX.size(); i++)
 		{
-			if (playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
+			if (!isInvincibility && playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
 			{
 				system("cls");
 				cout << "현재 높이: " << height << endl;
-				cout << "현재 스피드: " << speed << " t: " << creatEnemyProbability << endl;
+				cout << "현재 스피드: " << speed << endl;
 				gotoXY(10, 10);
 				cout << "게임오버" << endl << endl << endl << endl << endl << endl << endl;
 				Sleep(1000);
@@ -193,14 +261,20 @@ int main()
 		
 		height++;
 
-		speed = height / 100;
-		creatEnemyProbability = height / 10;
+		speed = height / 100 - minusSpeed;
+		creatEnemyProbability = height / 5;
 
-		if (speed > 10) speed = 10;
+		if (speed < 0) speed = 0;
+		else if (speed > 5) speed = 5;
 
 		if (creatEnemyProbability < 20) creatEnemyProbability = 20;
 		else if (creatEnemyProbability > 100) creatEnemyProbability = 100;
 
-		Sleep(100 - speed * 10);
+		if (isInvincibility && height - startItemHeight >= 10)
+		{
+			isInvincibility = false;
+		}
+
+		Sleep(50 - speed * 10);
 	}
 }
