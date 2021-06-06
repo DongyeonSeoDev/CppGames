@@ -88,6 +88,12 @@ void checkCollision()
 		{
 			for (int j = 0; j < (int)enemies.size(); j++)
 			{
+				if (enemies[j].checkPlayer(x, y))
+				{
+					isPlay = false;
+					return;
+				}
+
 				if (myMissiles[i].checkCollision(enemies[j].getX(), enemies[j].getY(), true, false))
 				{
 					myMissiles.erase(myMissiles.begin() + i);

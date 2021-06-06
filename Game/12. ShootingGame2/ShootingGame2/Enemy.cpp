@@ -31,6 +31,16 @@ bool Enemy::checkEnd()
 	return false;
 }
 
+bool Enemy::checkPlayer(int playerX, int playerY)
+{
+	if (x == playerX && (y == playerY || y - 1 == playerY))
+	{
+		return true;
+	}
+
+	return false;
+}
+
 int Enemy::getX()
 {
 	return x;
