@@ -50,11 +50,7 @@ bool Missile::checkCollision(int _x, int _y, bool _isUp, bool isMissileCheck)
 	{
 		if (isUp != _isUp) return false;
 
-		if (isUp == true && x == _x && (y == _y || y - 1 == _y))
-		{
-			return true;
-		}
-		else if (isUp == false && x == _x && (y == _y || y - 1 == _y))
+		if (x == _x && (y == _y || y - 1 == _y))
 		{
 			return true;
 		}

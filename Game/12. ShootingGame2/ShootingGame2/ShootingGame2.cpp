@@ -20,6 +20,8 @@ bool isPlay = true;
 vector<Enemy> enemies;
 vector<Missile> myMissiles;
 
+clock_t start;
+
 void setConsoleView()
 {
 	system("mode con:cols=40 lines=40");
@@ -38,6 +40,8 @@ void initData()
 
 	enemies.clear();
 	myMissiles.clear();
+
+	start = clock();
 }
 
 void checkDirection()
@@ -232,6 +236,9 @@ int main()
 		Sleep(100);
 		clrscr();
 	}
+
+	cout << "게임오버" << endl;
+	cout << difftime(clock(), start) / CLOCKS_PER_SEC << "초 버팀" << endl;
 
 	return 0;
 }
