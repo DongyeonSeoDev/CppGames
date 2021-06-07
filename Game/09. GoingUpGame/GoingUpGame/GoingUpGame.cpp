@@ -3,6 +3,8 @@
 #include <conio.h>
 #include <vector>
 #include <ctime>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 using namespace std;
 
 #define mapXSize 40
@@ -145,6 +147,7 @@ int main()
 	playerY = 20;
 
 	clock_t start = clock();
+	PlaySound(TEXT("Music.wav"), NULL, SND_ASYNC | SND_LOOP);
 
 	while (true)
 	{
@@ -218,7 +221,7 @@ int main()
 				cout << "시간: " << difftime(clock(), start) / CLOCKS_PER_SEC << "초" << endl;
 				gotoXY(10, 10);
 				cout << "게임오버" << endl << endl << endl << endl << endl << endl << endl;
-				Sleep(1000);
+				Beep(988, 1000);
 				system("pause");
 				return 0;
 			}
