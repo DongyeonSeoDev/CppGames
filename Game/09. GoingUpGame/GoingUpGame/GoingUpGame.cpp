@@ -39,6 +39,15 @@ int playerX, playerY;
 vector<int> enemyX, enemyY;
 vector<int> itemX, itemY, itemData;
 
+struct Score
+{
+	int score;
+};
+
+Score score;
+
+int bestScore = 0;
+
 char map[mapYSize][mapXSize] =
 {
 	"---------------------------------------",
@@ -222,6 +231,33 @@ void scolor(unsigned short text = 15, unsigned short back = 0)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text | (back << 4));
 }
 
+void Save()
+{
+	score.score = bestScore;
+
+	FILE* fp = 0;
+	fopen_s(&fp, FNAME, "w");
+
+	if (fp)
+	{
+		fwrite(&score, sizeof(Score), 1, fp);
+		fclose(fp);
+	}
+}
+
+void Load()
+{
+	FILE* fp = 0;
+	fopen_s(&fp, FNAME, "r");
+	if (fp)
+	{
+		fread(&score, sizeof(Score), 1, fp);
+		fclose(fp);
+
+		bestScore = score.score;
+	}
+}
+
 void start()
 {
 	system("cls");
@@ -239,6 +275,10 @@ void start()
 
 		cout << endl;
 	}
+
+	gotoXY(23, 12);
+	scolor(GREEN);
+	cout << "최고 높이: " << bestScore << "m" << endl;
 	scolor();
 }
 
@@ -329,6 +369,8 @@ void drawMap(char map[mapYSize][mapXSize])
 
 int main()
 {
+	Load();
+
 	system("title UP! 게임");
 	setcursor(false, 1);
 
@@ -453,6 +495,12 @@ int main()
 		{
 			if (!isInvincibility && playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
 			{
+				if (bestScore < height)
+				{
+					bestScore = height;
+					Save();
+				}
+
 				gameOver();
 				gotoXY(23, 13);
 				scolor(GREEN);
