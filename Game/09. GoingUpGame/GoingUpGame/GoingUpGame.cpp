@@ -5,6 +5,7 @@
 #include <ctime>
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
+
 using namespace std;
 
 #define mapXSize 40
@@ -218,7 +219,7 @@ void gotoXY(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
 }
 
-void setcursor(bool i, DWORD size) 
+void setcursor(bool i, DWORD size)
 {
 	CONSOLE_CURSOR_INFO c = { 0 };
 	c.dwSize = size;
@@ -285,7 +286,7 @@ void start()
 void description()
 {
 	system("cls");
-	
+
 	scolor(LIGHTGREEN);
 	cout << endl << endl << endl << endl;
 	for (int i = 0; i < mapYSize; i++)
@@ -325,6 +326,7 @@ void gameOver()
 void drawMap(char map[mapYSize][mapXSize])
 {
 	scolor(YELLOW);
+	gotoXY(0, 4);
 	for (int i = 0; i < mapYSize; i++)
 	{
 		cout << "                                   ";
@@ -448,15 +450,18 @@ int main()
 		system("cls");
 
 		scolor(GREEN);
+		gotoXY(40, 6);
 		cout << "높이: " << height << "m" << endl;
 		scolor(YELLOW);
+		gotoXY(40, 8);
 		cout << "스피드: " << speed << endl;
 		scolor(LIGHTBLUE);
+		gotoXY(40, 10);
 		cout << "시간: " << difftime(clock(), start) / CLOCKS_PER_SEC << "초" << endl;
-		scolor();
-
+		scolor(MAGENTA);
+		scolor(LIGHTMAGENTA);
+		gotoXY(40, 12);
 		if (isInvincibility) cout << "무적시간" << endl;
-		else cout << endl;
 
 		if (height % 3 == 0)
 		{
@@ -477,7 +482,7 @@ int main()
 			enemyY.push_back(4);
 		}
 
-		if (rand() % 100 < 1)
+		if (speed - minusSpeed > 0 && rand() % 100 < 1)
 		{
 			itemX.push_back(rand() % 17 + 19);
 			itemY.push_back(4);
@@ -569,7 +574,7 @@ int main()
 				i--;
 			}
 		}
-		
+
 		height++;
 
 		speed = height / 100 - minusSpeed;
@@ -588,4 +593,6 @@ int main()
 
 		Sleep(50 - speed * 10);
 	}
+
+	return 0;
 }
