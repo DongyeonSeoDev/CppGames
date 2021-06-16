@@ -6,7 +6,11 @@
 #include <mmsystem.h>
 #pragma comment(lib, "winmm.lib")
 
+#include "fmod.hpp"
+#include "fmod_errors.h"
+
 using namespace std;
+using namespace FMOD;
 
 #define mapXSize 40
 #define mapYSize 23
@@ -48,6 +52,10 @@ struct Score
 Score score;
 
 int bestScore = 0;
+
+System* pSystem;
+Sound* pSound[2];
+Channel* pChannel[2];
 
 char map[mapYSize][mapXSize] =
 {
@@ -232,6 +240,21 @@ void scolor(unsigned short text = 15, unsigned short back = 0)
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text | (back << 4));
 }
 
+void SoundSystem()
+{
+	System_Create(&pSystem);
+
+	pSystem->init(2, FMOD_INIT_NORMAL, NULL);
+
+	pSystem->createSound("sound1.wav", FMOD_DEFAULT, NULL, &pSound[0]);
+	pSystem->createSound("sound2.wav", FMOD_DEFAULT, NULL, &pSound[1]);
+}
+
+void Play(int Sound_num, int channelNumber) 
+{
+	pSystem->playSound(pSound[Sound_num], NULL, 0, &pChannel[channelNumber]);
+}
+
 void Save()
 {
 	score.score = bestScore;
@@ -375,6 +398,7 @@ int main()
 
 	system("title UP! 게임");
 	setcursor(false, 1);
+	SoundSystem();
 
 	srand((unsigned)time(NULL));
 
@@ -561,6 +585,9 @@ int main()
 				itemY.erase(itemY.begin() + i);
 				itemData.erase(itemData.begin() + i);
 				i--;
+
+				Play(0, 0);
+
 				continue;
 			}
 
@@ -590,6 +617,13 @@ int main()
 		{
 			isInvincibility = false;
 		}
+
+		if (height % 100 == 0)
+		{
+			Play(1, 1);
+		}
+
+		pSystem->update();
 
 		Sleep(50 - speed * 10);
 	}
