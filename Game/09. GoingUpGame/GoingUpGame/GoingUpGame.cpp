@@ -502,8 +502,30 @@ int main()
 
 		if (rand() % 100 < creatEnemyProbability)
 		{
-			enemyX.push_back(rand() % 17 + 19);
+			int randomX = rand() % 17 + 19;
+			enemyX.push_back(randomX);
 			enemyY.push_back(4);
+
+			if (randomX > 2 && randomX < 33)
+			{
+				if (rand() % 100 < 20)
+				{
+					enemyX.push_back(randomX + 1);
+					enemyY.push_back(4);
+				}
+				
+				if (rand() % 100 < 20)
+				{
+					enemyX.push_back(randomX - 1);
+					enemyY.push_back(4);
+				}
+
+				if (rand() % 100 < 20)
+				{
+					enemyX.push_back(randomX);
+					enemyY.push_back(5);
+				}
+			}
 		}
 
 		if (speed - minusSpeed > 0 && rand() % 100 < 1)
