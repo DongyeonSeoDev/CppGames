@@ -12,14 +12,17 @@
 using namespace std;
 using namespace FMOD;
 
+//맵 사이즈
 #define mapXSize 40
 #define mapYSize 23
 
+//방향키 번호
 #define UP		72
 #define DOWN	80
 #define LEFT	75
 #define RIGHT	77
 
+//색깔
 #define BLACK 0
 #define BLUE 1
 #define GREEN 2
@@ -37,13 +40,17 @@ using namespace FMOD;
 #define YELLOW 14
 #define WHITE 15
 
+//저장 파일 이름
 #define FNAME "score"
 
+//플레이어 좌표
 int playerX, playerY;
 
+//적과 아이템 좌표
 vector<int> enemyX, enemyY;
 vector<int> itemX, itemY, itemData;
 
+//점수 저장
 struct Score
 {
 	int score;
@@ -53,10 +60,12 @@ Score score;
 
 int bestScore = 0;
 
+//FOMD 변수
 System* pSystem;
 Sound* pSound[2];
 Channel* pChannel[2];
 
+//맵 디자인
 char map[mapYSize][mapXSize] =
 {
 	"---------------------------------------",
@@ -219,6 +228,7 @@ char gameOverMap[mapYSize][mapXSize + 1] =
 	"■■■■■■■■■■■■■■■■■■■■"
 };
 
+//커서 이동
 void gotoXY(int x, int y)
 {
 	COORD Cur;
@@ -227,6 +237,7 @@ void gotoXY(int x, int y)
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
 }
 
+//커서 안보이게 설정
 void setcursor(bool i, DWORD size)
 {
 	CONSOLE_CURSOR_INFO c = { 0 };
@@ -235,11 +246,13 @@ void setcursor(bool i, DWORD size)
 	SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &c);
 }
 
+//색깔 변경
 void scolor(unsigned short text = 15, unsigned short back = 0)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), text | (back << 4));
 }
 
+//사운드 시스템
 void SoundSystem()
 {
 	System_Create(&pSystem);
@@ -250,11 +263,13 @@ void SoundSystem()
 	pSystem->createSound("sound2.wav", FMOD_DEFAULT, NULL, &pSound[1]);
 }
 
+//소리 재생
 void Play(int Sound_num, int channelNumber) 
 {
 	pSystem->playSound(pSound[Sound_num], NULL, 0, &pChannel[channelNumber]);
 }
 
+//저장
 void Save()
 {
 	score.score = bestScore;
@@ -269,6 +284,7 @@ void Save()
 	}
 }
 
+//불러오기
 void Load()
 {
 	FILE* fp = 0;
@@ -282,6 +298,7 @@ void Load()
 	}
 }
 
+//시작 화면
 void start()
 {
 	system("cls");
@@ -306,6 +323,7 @@ void start()
 	scolor();
 }
 
+//설명 화면
 void description()
 {
 	system("cls");
@@ -326,6 +344,7 @@ void description()
 	scolor();
 }
 
+//게임오버 화면
 void gameOver()
 {
 	system("cls");
@@ -346,6 +365,7 @@ void gameOver()
 	scolor();
 }
 
+//게임 화면
 void drawMap(char map[mapYSize][mapXSize])
 {
 	scolor(YELLOW);
@@ -402,13 +422,13 @@ int main()
 
 	srand((unsigned)time(NULL));
 
-	int height = 0;
-	int speed = 0;
-	int creatEnemyProbability = 10;
-	int minusSpeed = 0;
+	int height = 0; //현재 높이
+	int speed = 0; //현재 속도
+	int creatEnemyProbability = 10; //적 생성 확률
+	int minusSpeed = 0; //마이너스 스피드
 
-	bool isInvincibility = false;
-	int startItemHeight = 0;
+	bool isInvincibility = false; //현재 무적인지 확인
+	int startItemHeight = 0; //무적 유지 시간
 
 	playerX = 27;
 	playerY = 21;
@@ -420,12 +440,12 @@ int main()
 		char ch = _getch();
 		ch = tolower(ch);
 
-		if (ch == 's')
+		if (ch == 's') //s면 게임 시작
 		{
 			Beep(784, 200);
 			break;
 		}
-		else if (ch == 'q')
+		else if (ch == 'q') //q면 설명 화면
 		{
 			Beep(698, 200);
 			description();
@@ -435,7 +455,7 @@ int main()
 				char ch = _getch();
 				ch = tolower(ch);
 
-				if (ch == 'x')
+				if (ch == 'x') //x면 돌아가기
 				{
 					Beep(698, 200);
 					start();
@@ -445,8 +465,8 @@ int main()
 		}
 	}
 
-	clock_t start = clock();
-	PlaySound(TEXT("Music.wav"), NULL, SND_ASYNC | SND_LOOP);
+	clock_t start = clock(); //시간 시작
+	PlaySound(TEXT("Music.wav"), NULL, SND_ASYNC | SND_LOOP); //노래 재생
 
 	while (true)
 	{
@@ -473,6 +493,7 @@ int main()
 
 		system("cls");
 
+		//현재 상태
 		scolor(GREEN);
 		gotoXY(40, 6);
 		cout << "높이: " << height << "m" << endl;
@@ -487,6 +508,7 @@ int main()
 		gotoXY(40, 12);
 		if (isInvincibility) cout << "무적시간" << endl;
 
+		//높이별로 맵 출력
 		if (height % 3 == 0)
 		{
 			drawMap(map);
@@ -500,12 +522,14 @@ int main()
 			drawMap(map3);
 		}
 
+		//적 생성
 		if (rand() % 100 < creatEnemyProbability)
 		{
 			int randomX = rand() % 17 + 19;
 			enemyX.push_back(randomX);
 			enemyY.push_back(4);
 
+			//적 추가 생성
 			if (randomX > 2 && randomX < 33)
 			{
 				if (rand() % 100 < 20)
@@ -528,6 +552,7 @@ int main()
 			}
 		}
 
+		//아이템 생성
 		if (speed - minusSpeed > 0 && rand() % 100 < 1)
 		{
 			itemX.push_back(rand() % 17 + 19);
@@ -542,10 +567,12 @@ int main()
 			itemData.push_back(1);
 		}
 
+		//적 충돌 확인
 		for (int i = 0; i < (int)enemyX.size(); i++)
 		{
 			if (!isInvincibility && playerX == enemyX[i] && (playerY == enemyY[i] || playerY == enemyY[i] + 1))
 			{
+				//게임오버시 실행
 				if (bestScore < height)
 				{
 					bestScore = height;
@@ -572,15 +599,17 @@ int main()
 					char ch = _getch();
 					ch = tolower(ch);
 
-					if (ch == 'q')
+					if (ch == 'q') //q를 누르면 종료
 					{
 						return 0;
 					}
 				}
 			}
 
+			//적 이동
 			enemyY[i]++;
 
+			//적 마지막 위치 확인
 			if (enemyY[i] > 25)
 			{
 				enemyX.erase(enemyX.begin() + i);
@@ -589,15 +618,16 @@ int main()
 			}
 		}
 
+		//아이템 충돌 확인
 		for (int i = 0; i < (int)itemData.size(); i++)
 		{
 			if (playerX == itemX[i] && (playerY == itemY[i] || playerY == itemY[i] + 1))
 			{
-				if (itemData[i] == 0)
+				if (itemData[i] == 0) //아이템 1번 효과 실행
 				{
 					minusSpeed += 1;
 				}
-				else
+				else //아이템 2번 효과 실행
 				{
 					isInvincibility = true;
 					startItemHeight = height;
@@ -613,8 +643,10 @@ int main()
 				continue;
 			}
 
+			//아이템 이동
 			itemY[i]++;
 
+			//아이템 마지막위치 확인
 			if (itemY[i] > 25)
 			{
 				itemX.erase(itemX.begin() + i);
@@ -624,14 +656,18 @@ int main()
 			}
 		}
 
+		//플레이어 이동
 		height++;
 
+		//스피드와 적 확률 확인
 		speed = height / 100 - minusSpeed;
 		creatEnemyProbability = height / 5;
 
+		//스피드 예외처리
 		if (speed < 0) speed = 0;
 		else if (speed > 5) speed = 5;
 
+		//적 생성 확률 예외처리
 		if (creatEnemyProbability < 20) creatEnemyProbability = 20;
 		else if (creatEnemyProbability > 100) creatEnemyProbability = 100;
 
@@ -640,6 +676,7 @@ int main()
 			isInvincibility = false;
 		}
 
+		//높이가 100의 배수라면 효과음 재생
 		if (height % 100 == 0)
 		{
 			Play(1, 1);
