@@ -9,6 +9,8 @@
 #define KEY_UP         72
 #define KEY_DOWN       80
 
+#define FNAME "score"
+
 extern int board[4][4];
 extern bool bGameOver;
 
@@ -25,3 +27,8 @@ bool moveNumber(int sX, int sY, int tX, int tY);
 void getKey();
 
 void checkGameOver();
+
+void showScore();
+
+void Save(int highScore);
+int Load();

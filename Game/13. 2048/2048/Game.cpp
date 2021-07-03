@@ -309,8 +309,63 @@ void checkGameOver()
 
 	setTextColor(15);
 
-	gotoXY(MAP_X + 6, MAP_Y + 21);
+	gotoXY(MAP_X + 6, MAP_Y + 19);
 	cout << "GAME OVER!!";
 
+	showScore();
+
 	drawGame();
+}
+
+void showScore()
+{
+	int score = 0;
+
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			score += board[i][j];
+		}
+	}
+
+	int highScore = Load();
+
+	if (score > highScore)
+	{
+		highScore = score;
+		Save(highScore);
+	}
+
+	gotoXY(MAP_X + 6, MAP_Y + 20);
+	cout << "SCORE: " << score;
+	gotoXY(MAP_X + 6, MAP_Y + 21);
+	cout << "HIGHSCORE: " << highScore;
+}
+
+void Save(int highSocre)
+{
+	FILE* fp = 0;
+	fopen_s(&fp, FNAME, "w");
+
+	if (fp)
+	{
+		fwrite(&highSocre, sizeof(highSocre), 1, fp);
+		fclose(fp);
+	}
+}
+
+int Load()
+{
+	int highScore = 0;
+
+	FILE* fp = 0;
+	fopen_s(&fp, FNAME, "r");
+	if (fp)
+	{
+		fread(&highScore, sizeof(highScore), 1, fp);
+		fclose(fp);
+	}
+
+	return highScore;
 }
