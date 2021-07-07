@@ -16,6 +16,8 @@ extern bool bGameOver;
 
 void setConsoleView();
 
+void start();
+
 void initData();
 
 void initDraw();

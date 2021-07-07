@@ -6,11 +6,15 @@ int main()
 {
 	setConsoleView();
 
+	start();
+
 	initData();
 	initDraw();
 
 	createNumber();
-	createNumber();
+	createNumber(); 
+
+	showScore();
 
 	while (true)
 	{

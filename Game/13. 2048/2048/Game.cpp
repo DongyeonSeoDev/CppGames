@@ -22,6 +22,37 @@ void setConsoleView()
 	srand((unsigned)time(NULL));
 }
 
+void start()
+{
+	setTextColor(14);
+	gotoXY(0, 2);
+	cout << "★★★★★★★★★★★★★★★★";
+
+	setTextColor(2);
+	gotoXY(11, 6);
+	cout << "2048 게임";
+
+	setTextColor(3);
+	gotoXY(11, 12);
+	cout << "시작하려면";
+	gotoXY(7, 13);
+	cout << "아무키나 눌러주세요";
+
+	setTextColor(5);
+	gotoXY(8, 19);
+	cout << "HIGHSCORE: " << Load();
+
+	setTextColor(14);
+	gotoXY(0, 23);
+	cout << "★★★★★★★★★★★★★★★★";
+
+	setTextColor(15);
+
+	getKeyDown();
+
+	clrscr();
+}
+
 void initData()
 {
 	for (int i = 0; i < 4; i++)
@@ -53,6 +84,9 @@ void initDraw()
 
 	gotoXY(MAP_X, MAP_Y + 14);
 	cout << "→, ←, ↑, ↓ : 이동";
+
+	gotoXY(MAP_X + 7, MAP_Y + 16);
+	cout << "Q: 종료" << endl;
 }
 
 void drawGame()
@@ -165,9 +199,12 @@ void getKey()
 	bool bChange = false;
 
 	int key = getKeyDown();
+	key = tolower(key);
 
 	if (key == KEY_DIRECTION)
 	{
+		if (bGameOver) return;
+
 		key = getKeyDown();
 
 		if (key == KEY_LEFT)
@@ -270,6 +307,13 @@ void getKey()
 			}
 		}
 	}
+	else if (key == 'q')
+	{
+		clrscr();
+		setTextColor(15);
+		gotoXY(0, 0);
+		exit(0);
+	}
 
 	if (bChange)
 	{
@@ -279,6 +323,10 @@ void getKey()
 
 void checkGameOver()
 {
+	if (bGameOver) return;
+
+	showScore();
+
 	for (int i = 0; i < 4; i++)
 	{
 		for (int j = 0; j < 4; j++)
@@ -309,10 +357,8 @@ void checkGameOver()
 
 	setTextColor(15);
 
-	gotoXY(MAP_X + 6, MAP_Y + 19);
+	gotoXY(MAP_X + 6, MAP_Y + 22);
 	cout << "GAME OVER!!";
-
-	showScore();
 
 	drawGame();
 }
@@ -325,7 +371,7 @@ void showScore()
 	{
 		for (int j = 0; j < 4; j++)
 		{
-			score += board[i][j];
+			score += board[i][j] > 10000 ? board[i][j] - 10000 : board[i][j];
 		}
 	}
 
@@ -337,9 +383,10 @@ void showScore()
 		Save(highScore);
 	}
 
-	gotoXY(MAP_X + 6, MAP_Y + 20);
+	setTextColor(15);
+	gotoXY(MAP_X + 6, MAP_Y + 18);
 	cout << "SCORE: " << score;
-	gotoXY(MAP_X + 6, MAP_Y + 21);
+	gotoXY(MAP_X + 4, MAP_Y + 20);
 	cout << "HIGHSCORE: " << highScore;
 }
 
