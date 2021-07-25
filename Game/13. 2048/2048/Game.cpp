@@ -209,6 +209,8 @@ void getKey()
 
 		if (key == KEY_LEFT)
 		{
+			beep(490, 100);
+
 			do
 			{
 				bMove = false;
@@ -231,6 +233,8 @@ void getKey()
 		}
 		else if (key == KEY_RIGHT)
 		{
+			beep(490, 100);
+
 			do
 			{
 				bMove = false;
@@ -253,6 +257,8 @@ void getKey()
 		}
 		else if (key == KEY_UP)
 		{
+			beep(490, 100);
+
 			do
 			{
 				bMove = false;
@@ -275,6 +281,8 @@ void getKey()
 		}
 		else if (key == KEY_DOWN)
 		{
+			beep(490, 100);
+
 			do
 			{
 				bMove = false;
